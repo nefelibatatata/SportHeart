@@ -14,14 +14,15 @@
  Date: 02/03/2022 10:15:55
 */
 
-SET NAMES utf8mb4;
-SET FOREIGN_KEY_CHECKS = 0;
+-- SET NAMES utf8mb4;
+-- SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
 -- Table structure for sportheartinfo
 -- ----------------------------
 DROP TABLE IF EXISTS `sportheartinfo`;
 CREATE TABLE `sportheartinfo`  (
+  id INT UNSIGNED AUTO_INCREMENT primary key,
   `student_id` varchar(18) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL comment '学籍号',
   `device_id` varchar(18) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL comment '设备标识',
   `sport_date` date NOT NULL DEFAULT '0000-00-00' comment '运动日期',
@@ -29,7 +30,9 @@ CREATE TABLE `sportheartinfo`  (
   `sport_type` varchar(20) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL comment '运动模式',
   `location` longtext CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL comment '位置',
   `heart_rate` longtext CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL comment '心率',
-  PRIMARY KEY (`student_id`, `device_id`, `sport_date`, `start_time`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
-
-SET FOREIGN_KEY_CHECKS = 1;
+  `state` TINYINT(2) NOT NULL DEFAULT '1' COMMENT '0为否，1为是，是否启用'
+  -- PRIMARY KEY (`student_id`, `device_id`, `sport_date`, `start_time`) USING BTREE
+)
+-- ) ENGINE = InnoDB CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Compact;
+-- ALTER TABLE `sportheartinfo` ADD COLUMN `state` TINYINT(2) NOT NULL DEFAULT '1' COMMENT '0为否1为是，是否启用' AFTER `heart_rate`;
+-- SET FOREIGN_KEY_CHECKS = 1;

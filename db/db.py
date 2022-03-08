@@ -1,7 +1,16 @@
 import pymysql
 import pandas as pd
 import time
-import matplotlib.pyplot as plt
+from threading import Thread
+
+
+class SportDB:
+
+    def __init__(self, host, user, password, database):
+        self.host = host
+        self.user = user
+        self.password = password
+        self.database = database
 
 
 # sportheartinfo表中插入数据
@@ -11,7 +20,7 @@ def sportheartinfo():
                          password='123456',
                          database='sport')
     cursor = db.cursor()
-    data = pd.read_csv("data/sportheartinfo.csv", dtype={'学籍号': str})
+    data = pd.read_csv("data/sportheartinfo_copy1.csv", dtype={'学籍号': str})
     for i in range(0, data.shape[0]):
         sql = "INSERT INTO sportheartinfo(student_id, device_id,sport_date, \
             start_time, sport_type, location, heart_rate)VALUES ("
@@ -44,7 +53,7 @@ def sportstatisticinfo():
                          database='sport')
     cursor = db.cursor()
     data = pd.read_csv(
-        "data/sportstatisticinfo.csv",
+        "data/sportstatisticinfo_copy1.csv",
         #    nrows=2,
         dtype={'学籍号': str})
     for i in range(0, data.shape[0]):
@@ -73,4 +82,8 @@ def sportstatisticinfo():
 
 
 if __name__ == '__main__':
-    sportstatisticinfo()
+    Thread(target=sportstatisticinfo).start()
+    Thread(target=sportheartinfo).start()
+
+    # sportstatisticinfo()
+    # sportheartinfo()
