@@ -1,5 +1,6 @@
 import pandas as pd
-import time
+from db import SportDB
+import time, json
 import pymysql
 import matplotlib.pyplot as plt
 import datetime
@@ -197,8 +198,8 @@ def test():
 
 
 if __name__ == '__main__':
-    # main()
-    # test()
-    # filter2()
-    # mariadb()
-    filter_old()
+    db_config = None
+    with open("config/db_config.json", "r") as load_f:
+        db_config = json.load(load_f)
+        print(db_config)
+    sportDB = SportDB(db_config)
