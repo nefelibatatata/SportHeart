@@ -7,11 +7,13 @@ import datetime
 
 
 def filter_time(sportDB):
-    results = sportDB.getData(1)
+    results = sportDB.getData()
     for row in results:
-        # id = row[0]
+        id = row[0]
         time_serial = row[7]
-        print(time_serial)
+        data_array = time_serial[:-1].split(",")
+        if len(data_array) < 10 * 60 * 2:
+            sportDB.disable(id)
         # table = pd.DataFrame(columns=['timestamp', 'rate'],
         #                      data=time_serial[:-1].split(","))
         # print(table)

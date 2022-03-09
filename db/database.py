@@ -19,8 +19,10 @@ class SportDB:
         self.cursor = self.db.cursor()
 
     def disable(self, id):
-        disabled_sql = 'UPDATE sportheartinfo SET state=0 WHERE id='
-        self.cursor.execute(disabled_sql + str(id) + ";")
+        disabled_sql = 'UPDATE sportheartinfo SET state=0 WHERE id=' + str(
+            id) + ";"
+        print(disabled_sql)
+        self.cursor.execute(disabled_sql)
         self.db.commit()
 
     def getData(self, number=None):
@@ -31,7 +33,7 @@ class SportDB:
             sql = "select * from sportheartinfo where state=1 order "\
                 "by rand() limit %d;" % number
 
-            print(sql)
+        print(sql)
 
         try:
             # 执行SQL语句
