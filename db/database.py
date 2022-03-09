@@ -104,5 +104,9 @@ class SportDB:
                 # 如果发生错误则回滚
                 self.db.rollback()
 
+    def Execute(self, sql):
+        self.cursor.execute(sql)
+        self.db.commit()
+
     def __del__(self):
         self.db.close()

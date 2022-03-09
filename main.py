@@ -8,16 +8,21 @@ import datetime
 
 def filter_time(sportDB):
     results = sportDB.getData()
+    i = 0
     for row in results:
+        i = i + 1
         id = row[0]
         time_serial = row[7]
+        if i % 1000 == 0:
+            print('第' + str(i) + '条数据，id是：' + id) #  + '\n时间序列：' + time_serial
+        '''
         data_array = time_serial[:-1].split(",")
         if len(data_array) < 10 * 60 * 2:
             sportDB.disable(id)
         # table = pd.DataFrame(columns=['timestamp', 'rate'],
         #                      data=time_serial[:-1].split(","))
         # print(table)
-
+        '''
 
 def show_chart(sportDB):
 
@@ -53,39 +58,48 @@ def main():
     filter_time(sportDB)
 
 
-def filter2():
-    db = pymysql.connect(host='localhost',
-                         user='golang',
-                         password='123456',
-                         database='sport')
-    cursor = db.cursor()
-    sql = 'select * from sportheartinfo where state=1;'
+def filter2(sportDB):
     disabled_sql = 'UPDATE sportheartinfo SET state=0 WHERE id='
-    results = None
-    try:
-        # 执行SQL语句
-        cursor.execute(sql)
-        # 获取所有记录列表
-        results = cursor.fetchall()
-
-    except Exception as e:
-        print(e)
-
+    results = sportDB.getData()
     try:
         for row in results:
-            # print(row)
-            id = row[0]
-            data = row[7]
+            id = row[8]
+            data = row[6]
             row_array = data[:-1].split(",")
             rate_array = row_array[1::2]
             if len(set(rate_array)) <= 5:
                 print(set(rate_array))
                 print(disabled_sql + str(id) + ";")
-                cursor.execute(disabled_sql + str(id) + ";")
-                db.commit()
+                # sportDB.Execute(disabled_sql + str(id) + ";")
     except Exception as e:
         print(e)
-    db.close()
+
+
+def filter3(sportDB):
+    disabled_sql = 'UPDATE sportheartinfo SET state=0 WHERE id='
+    results = sportDB.getData()
+    i = 0
+    try:
+        for row in results:
+            id = row[0] # 唯一id
+            data = row[7] #心率数据
+            row_array = data[:-1].split(",")
+            timestamp_array = row_array[::2]
+            rate_array = row_array[1::2]
+            timestamp_array_2 = []
+            for i in range(0, len(timestamp_array)): #以1s为精度
+                timestamp_array_2.append(int(timestamp_array[i]) // 1000 - int(timestamp_array[0]) // 1000)
+
+            if len(set(timestamp_array_2)) < len(timestamp_array_2):
+                i = i+1
+                print("时间戳重复（以1s为精度）！")
+                print(disabled_sql + str(id) + ";")
+                sportDB.Execute(disabled_sql + str(id) + ";")
+        print("重复数量："+str(i))
+
+    except Exception as e:
+        print(e)
+
 
 
 # 文本中提取时间序列
