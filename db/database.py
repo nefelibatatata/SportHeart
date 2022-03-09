@@ -1,17 +1,17 @@
 import pymysql
 import pandas as pd
 import time
+import json
 
 
 class SportDB:
 
-    def __init__(self, config_dict: dict):
-        mysql_config = config_dict['mysql']
+    def __init__(self):
+        db_config = None
+        with open("config/db_config.json", "r") as load_f:
+            db_config = json.load(load_f)
+        mysql_config = db_config['mysql']
         self.host = mysql_config['host']
-        self.user = mysql_config['user']
-        self.password = mysql_config['password']
-        self.database = mysql_config['database']
-        print(self.database)
         self.db = pymysql.connect(host=mysql_config['host'],
                                   user=mysql_config['user'],
                                   password=mysql_config['password'],
@@ -23,8 +23,16 @@ class SportDB:
         self.cursor.execute(disabled_sql + str(id) + ";")
         self.db.commit()
 
-    def getData(self):
-        sql = 'select * from sportheartinfo where state=1;'
+    def getData(self, number=None):
+        sql = None
+        if number is None:
+            sql = "select * from sportheartinfo where state=1;"
+        else:
+            sql = "select * from sportheartinfo where state=1 order "\
+                "by rand() limit %d;" % number
+
+            print(sql)
+
         try:
             # 执行SQL语句
             self.cursor.execute(sql)
@@ -35,10 +43,14 @@ class SportDB:
         except Exception as e:
             print(e)
 
+        return None
+
     def import_sportheartinfo(self):
         data = pd.read_csv("data/sportheartinfo.csv", dtype={'学籍号': str})
         for i in range(0, data.shape[0]):
-            sql = "INSERT INTO sportheartinfo(student_id, device_id,sport_date, start_time, sport_type, location, heart_rate)VALUES ("
+            sql = "INSERT INTO sportheartinfo(student_id, device_id,"\
+                "sport_date, start_time, sport_type, location, heart_rate"\
+                ")VALUES ("
 
         for j in range(0, data.shape[1]):
             if j == 2:
@@ -66,7 +78,10 @@ class SportDB:
             #    nrows=2,
             dtype={'学籍号': str})
         for i in range(0, data.shape[0]):
-            sql = "INSERT INTO sportstatisticinfo(student_id, device_id,sport_date,start_time, sport_type, continuing_time, steps, calory, distance, standard_time, max_heart_rate, average_heart_rate, max_steps, average_steps, rate)VALUES ("
+            sql = "INSERT INTO sportstatisticinfo(student_id, device_id,"\
+                "sport_date,start_time, sport_type, continuing_time, steps,"\
+                " calory,distance, standard_time, max_heart_rate,"\
+                " average_heart_rate, max_steps, average_steps, rate)VALUES ("
             for j in range(0, data.shape[1]):
                 # 转换时间格式为mysql数据库格式
                 if j == 2:
@@ -86,3 +101,6 @@ class SportDB:
                 print(e)
                 # 如果发生错误则回滚
                 self.db.rollback()
+
+    def __del__(self):
+        self.db.close()
